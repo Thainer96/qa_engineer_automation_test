@@ -87,18 +87,22 @@ class BasePage(object):
     @staticmethod
     def get_url_per_environment(context):
         country = context.config.userdata["country"]
-        return '{}{}'.format("https://www.kayak.com.", country)
+        return '{}{}'.format("https://www.kayak.com.", country+"/")
 
     def get_title_page(self) -> str:
         return self.web_driver.title
 
     def are_element_presents(self, list_element, context):
         validation_list = []
+        error_list = []
         elements = transformation_to_element_name(list_element)
         for element in elements:
             selector = self.context.current_page.webElements.__dict__.get(element)
             if selector is None:
-                raise TypeError(f' The {element} selector name is not created')
-            web_element = context.browser.find_elements(selector)
-            validation_list.append(len(web_element) > 0)
+                error_list.append(element)
+            else:
+                web_element = context.browser.find_elements(selector)
+                validation_list.append(len(web_element) > 0)
+        if error_list:
+            raise TypeError(f' The following element {error_list} selectors name is not created')
         return validation_list

@@ -2,30 +2,52 @@
 
 Feature: Validate element created dropdown column
 
+  @ValidateElements
   Scenario: Navigate to the Kayak home page and validate principal elements
     Given I navigate to the kayak main page
     Then I should be in the "home" page
     And The page "should" contain the next elements
       | name                   | type   |
+      | origin_flight          | input  |
+      | destination_flight     | input  |
+      | start_date             | input  |
+      | end_date               | input  |
+      | search                 | button |
       | name_tag               | input  |
       | name_dropdown_column   | input  |
       | search_tag             | input  |
       | cancel                 | button |
       | create_column_disabled | button |
 
+  @ValidateHomePage
   Scenario: Validate URL of Home page
     Given I navigate to the kayak main page
     Then I should be in the "home" page
-    And The url page should be equal to the next "https://www.kayak.com/" url
+    And The url page should be equal to the next "https://www.kayak.com.co/" url
 
-    Scenario Outline: Navigate between countries and validate the URL
-      Given I navigate to the kayak main page
-      Then I should be in the "home" page
-      When I navigate to the "<url>" URL
-      Then The url page should be equal to the next "<url>" url
+  @ValidateUrl
+  Scenario Outline: Navigate between countries and validate the URL
+    Given I navigate to the kayak main page
+    Then I should be in the "home" page
+    When I navigate to the "<url>" URL
+    Then The url page should be equal to the next "<url>" url
 
     Examples:
       | url                       |
       | https://www.kayak.com.my/ |
       | https://www.kayak.com.pr/ |
       | https://www.kayak.com.br/ |
+
+  @ValidateMenuOption
+  Scenario Outline: Validate menu options
+    Given I navigate to the kayak main page
+    Then I should be in the "home" page
+    Then validate correct module select
+      | Option   | ValidUrl        | Element    |
+      | <module> | <complementUrl> | <selector> |
+
+    Examples:
+      | module       | complementUrl | selector      |
+      | Vuelos       | flights       | select_option |
+      | Alojamientos | stays         | select_option |
+      | Carros       | cars          | select_option |

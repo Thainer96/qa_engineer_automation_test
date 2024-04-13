@@ -3,7 +3,9 @@ from hamcrest import equal_to, assert_that, only_contains
 
 from lib.components.generalcomponents import GeneralComponents
 from lib.helpers.generalhelpers import validate_text, transform_validation, transformation_helper, join_words, \
-    split_and_replace_string, transformation_to_element_name
+    split_and_replace_string
+from lib.pages.basepage import BasePage
+from lib.pages.comoonelements.commonelement import CommonElement
 
 use_step_matcher("re")
 
@@ -60,3 +62,16 @@ def step_impl(context, element_name, element_type, expression):
     assertion = transform_validation(expression)
     button_enabled = GeneralComponents.is_enabled_in_page(context, element_name)
     return assert_that(button_enabled, equal_to(assertion))
+
+
+@then('validate correct module select')
+def step_impl(context):
+    values = []
+    for row in context.table:
+        values.append({row['Option'], row['ValidUrl']})
+        web_element = CommonElement.get_element_by_value(row['Element'], 'XPATH', row['Option'])
+        GeneralComponents.wait_until_element_is_clickable(context, web_element)
+        GeneralComponents.click_component(context, web_element)
+        url = BasePage.get_url_per_environment(context)
+        url_too_compare = f"{url}{row['ValidUrl']}"
+        return assert_that(context.web_driver.current_url, equal_to(url_too_compare))
